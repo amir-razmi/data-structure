@@ -30,7 +30,7 @@ def generate_queens(coords):
   return ids
 
 all_possible_solutions = []
-def loop(row , coords = []):
+def tree(row , coords = []):
   if(row < 0):
     return
   for col in range(rows):
@@ -48,8 +48,8 @@ def loop(row , coords = []):
     if row == 0:
       all_possible_solutions.append(new_coords)
       return
-    loop(row - 1 , coords=new_coords)
-loop(rows -1)
+    tree(row - 1 , coords=new_coords)
+tree(rows -1)
 
 last_generated_index = 0
 queens_id = generate_queens(all_possible_solutions[last_generated_index])
