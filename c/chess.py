@@ -29,6 +29,14 @@ def generate_queens(coords, page):
   ids.append(text)
   return ids
 
+# Starts from top row to bottom
+# On each row, loops on all columns(squares)
+# It checks if this square is compatible with previously selected squares
+# If it does not, then it will continue to next column
+# And if it was ok, then it will go to next row
+# If it reaches to the last row, the first compatible square will be selected
+# Then it will go to the top row again and tries all this with the next square in top row
+
 all_possible_solutions = []
 def tree(row , coords = []):
   if(row < 0):
@@ -62,7 +70,7 @@ def change_slide(event):
     last_generated_index = (last_generated_index - 1) % len(all_possible_solutions)
   elif event.keysym == 'Right':
     last_generated_index = (last_generated_index + 1) % len(all_possible_solutions)
-  
+
   queens_id = generate_queens(all_possible_solutions[last_generated_index], last_generated_index + 1)
 
 w.bind("<Left>", change_slide)
