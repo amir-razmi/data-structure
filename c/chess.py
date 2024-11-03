@@ -22,11 +22,13 @@ for row in range(rows):
 
 
 
-def generate_queens(coords):
+def generate_queens(coords, page):
   ids = []
   for p in coords:
     id = canvas.create_image(square_size * p[0], square_size * p[1], anchor='nw', image=tk_image)
     ids.append(id)
+  text = canvas.create_text(20,20, font=50, text=f"{page}",)
+  ids.append(text)
   return ids
 
 all_possible_solutions = []
@@ -34,15 +36,14 @@ def tree(row , coords = []):
   if(row < 0):
     return
   for col in range(rows):
-    is_wrong_pos_exists = False
+    is_column_used = False
     for [x,y] in coords:
-      if y == row:
-        return
-      elif x == col or abs(x - col) == abs(y - row):
-        is_wrong_pos_exists = True
+      if x == col or abs(x - col) == abs(y - row):
+        is_column_used = True
         break
-    if is_wrong_pos_exists == True:
+    if is_column_used == True:
       continue
+
     new_coords = coords.copy()
     new_coords.append([col,row])
     if row == 0:
@@ -52,7 +53,7 @@ def tree(row , coords = []):
 tree(rows -1)
 
 last_generated_index = 0
-queens_id = generate_queens(all_possible_solutions[last_generated_index])
+queens_id = generate_queens(all_possible_solutions[last_generated_index], 1)
 
 def change_slide(event):
   global queens_id,last_generated_index
@@ -60,11 +61,11 @@ def change_slide(event):
     canvas.delete(id)
 
   if event.keysym == 'Left':
-    last_generated_index = (last_generated_index + 1) % len(all_possible_solutions)
-  elif event.keysym == 'Right':
     last_generated_index = (last_generated_index - 1) % len(all_possible_solutions)
+  elif event.keysym == 'Right':
+    last_generated_index = (last_generated_index + 1) % len(all_possible_solutions)
   
-  queens_id = generate_queens(all_possible_solutions[last_generated_index])
+  queens_id = generate_queens(all_possible_solutions[last_generated_index], last_generated_index + 1)
 
 w.bind("<Left>", change_slide)
 w.bind("<Right>", change_slide)
