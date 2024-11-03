@@ -1,10 +1,9 @@
+from PIL import Image, ImageTk
+from tkinter import Canvas, Tk, PhotoImage
 
 rows = int(input("Enter rows : "))
-square_size = 50
+square_size = 80
 colors = ['#F0D9B5', '#B58863']
-
-from tkinter import Canvas, Tk, PhotoImage
-from PIL import Image, ImageTk
 
 w = Tk()
 w.title("Pomodoro")
@@ -22,34 +21,52 @@ for row in range(rows):
     canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline=color)
 
 
-generated = False
-def generate_queens(posses):
-  global generated
-  if generated == True:
+
+def generate_queens(coords):
+  ids = []
+  for p in coords:
+    id = canvas.create_image(square_size * p[0], square_size * p[1], anchor='nw', image=tk_image)
+    ids.append(id)
+  return ids
+
+all_possible_solutions = []
+def loop(row , coords = []):
+  if(row < 0):
     return
-  generated = True
-
-  for p in range(len(posses)):
-    canvas.create_image(square_size * posses[p][0], square_size * posses[p][1], anchor='nw', image=tk_image)
-
-def loop(row , logs = "", l = 1 , posses = []):
   for col in range(rows):
-    if(row >= 0):
-      is_wrong_pos_exists = False
-      for p in range(len(posses)):
-        pv = posses[p]
-        if pv[0] == col or pv[1] == row or abs(pv[0] - col) == abs(pv[1] - row):
-          is_wrong_pos_exists = True
-          break
-      if is_wrong_pos_exists == True:
-        continue
-      new_posses = posses.copy()
-      new_posses.append([col,row])
-      loop(row - 1 , l=l + 1 , logs=f"{logs} -> {l}({col})", posses=new_posses)
-      if(l == rows):
-        print(new_posses)
-        generate_queens(new_posses)
-        return 
-
+    is_wrong_pos_exists = False
+    for [x,y] in coords:
+      if y == row:
+        return
+      elif x == col or abs(x - col) == abs(y - row):
+        is_wrong_pos_exists = True
+        break
+    if is_wrong_pos_exists == True:
+      continue
+    new_coords = coords.copy()
+    new_coords.append([col,row])
+    if row == 0:
+      all_possible_solutions.append(new_coords)
+      return
+    loop(row - 1 , coords=new_coords)
 loop(rows -1)
+
+last_generated_index = 0
+queens_id = generate_queens(all_possible_solutions[last_generated_index])
+
+def change_slide(event):
+  global queens_id,last_generated_index
+  for id in queens_id:
+    canvas.delete(id)
+
+  if event.keysym == 'Left':
+    last_generated_index = (last_generated_index + 1) % len(all_possible_solutions)
+  elif event.keysym == 'Right':
+    last_generated_index = (last_generated_index - 1) % len(all_possible_solutions)
+  
+  queens_id = generate_queens(all_possible_solutions[last_generated_index])
+
+w.bind("<Left>", change_slide)
+w.bind("<Right>", change_slide)
+
 w.mainloop()
