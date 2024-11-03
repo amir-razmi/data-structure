@@ -1,5 +1,5 @@
 from PIL import Image, ImageTk
-from tkinter import Canvas, Tk, PhotoImage
+from tkinter import Canvas, Tk
 
 rows = int(input("Enter rows : "))
 square_size = 80
@@ -13,10 +13,8 @@ original_image = Image.open("queen.png").convert("RGBA").resize((int(square_size
 tk_image = ImageTk.PhotoImage(original_image)
 for row in range(rows):
   for col in range(rows):
-    x1 = col * square_size
-    y1 = row * square_size
-    x2 = x1 + square_size
-    y2 = y1 + square_size
+    x1,y1 = col * square_size, row * square_size
+    x2,y2 = x1 + square_size, y1 + square_size
     color = colors[(row + col) % 2]
     canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline=color)
 
@@ -24,8 +22,8 @@ for row in range(rows):
 
 def generate_queens(coords, page):
   ids = []
-  for p in coords:
-    id = canvas.create_image(square_size * p[0], square_size * p[1], anchor='nw', image=tk_image)
+  for [x,y] in coords:
+    id = canvas.create_image(square_size * x, square_size * y, anchor='nw', image=tk_image)
     ids.append(id)
   text = canvas.create_text(20,20, font=50, text=f"{page}",)
   ids.append(text)
