@@ -6,7 +6,7 @@ square_size = 80
 colors = ['#F0D9B5', '#B58863']
 
 w = Tk()
-w.title("Pomodoro")
+w.title("N-Queen")
 canvas = Canvas(w, width=square_size * rows, height=square_size * rows, bg="white")
 canvas.pack()
 original_image = Image.open("queen.png").convert("RGBA").resize((int(square_size*0.8), int(square_size*0.8)), 1)
