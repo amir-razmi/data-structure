@@ -39,24 +39,18 @@ def generate_queens(coords, page):
 
 all_possible_solutions = []
 def tree(row , coords = []):
-  if(row < 0):
-    return
-  for col in range(rows):
-    is_column_used = False
-    for [x,y] in coords:
-      if x == col or abs(x - col) == abs(y - row):
-        is_column_used = True
-        break
-    if is_column_used == True:
+  used_columns = [x for [x,y] in coords]
+  for col in [x for x in range(rows) if used_columns.count(x) == 0]:
+    if len([x for [x,y] in coords if abs(x - col) == abs(y - row)]) != 0:
       continue
 
-    new_coords = coords.copy()
-    new_coords.append([col,row])
+    new_coords = [[col,row]] + coords
     if row == 0:
       all_possible_solutions.append(new_coords)
       return
     tree(row - 1 , coords=new_coords)
-tree(rows -1)
+
+tree(rows - 1)
 
 last_generated_index = 0
 queens_id = generate_queens(all_possible_solutions[last_generated_index], 1)
@@ -75,5 +69,4 @@ def change_slide(event):
 
 w.bind("<Left>", change_slide)
 w.bind("<Right>", change_slide)
-
 w.mainloop()
