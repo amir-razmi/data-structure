@@ -1,7 +1,30 @@
+# Starts from top row to bottom
+# On each row, loops on all columns(squares)
+# It checks if this square is compatible with previously selected squares
+# If it does not, then it will continue to next column
+# And if it was ok, then it will go to next row
+# If it reaches to the last row, the first compatible square will be selected
+# Then it will go to the top row again and tries all this with the next square in top row
+
+rows = int(input("How many rows? "))
+all_possible_solutions = []
+
+def tree(row , coords = []):
+  used_columns = [x for [x,y] in coords]
+  for col in [x for x in range(rows) if used_columns.count(x)==0]:
+    if len([x for [x,y]in coords if abs(x-col)==abs(y-row)])!=0:
+      continue
+    new_coords = [[col,row]] + coords
+    if row == 0:
+      all_possible_solutions.append(new_coords)
+      return
+    tree(row - 1 , coords=new_coords)
+tree(rows - 1)
+
+
+
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk
-
-rows = int(input("Enter rows : "))
 square_size = 80
 colors = ['#F0D9B5', '#B58863']
 
@@ -18,8 +41,6 @@ for row in range(rows):
     color = colors[(row + col) % 2]
     canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline=color)
 
-
-
 def generate_queens(coords, page):
   ids = []
   for [x,y] in coords:
@@ -29,32 +50,8 @@ def generate_queens(coords, page):
   ids.append(text)
   return ids
 
-# Starts from top row to bottom
-# On each row, loops on all columns(squares)
-# It checks if this square is compatible with previously selected squares
-# If it does not, then it will continue to next column
-# And if it was ok, then it will go to next row
-# If it reaches to the last row, the first compatible square will be selected
-# Then it will go to the top row again and tries all this with the next square in top row
-
-all_possible_solutions = []
-def tree(row , coords = []):
-  used_columns = [x for [x,y] in coords]
-  for col in [x for x in range(rows) if used_columns.count(x) == 0]:
-    if len([x for [x,y] in coords if abs(x - col) == abs(y - row)]) != 0:
-      continue
-
-    new_coords = [[col,row]] + coords
-    if row == 0:
-      all_possible_solutions.append(new_coords)
-      return
-    tree(row - 1 , coords=new_coords)
-
-tree(rows - 1)
-
 last_generated_index = 0
 queens_id = generate_queens(all_possible_solutions[last_generated_index], 1)
-
 def change_slide(event):
   global queens_id,last_generated_index
   for id in queens_id:
