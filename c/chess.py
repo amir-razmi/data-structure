@@ -10,7 +10,7 @@ rows_count = int(input("How many rows? "))
 all_possible_solutions = []
 
 def tree(row , coords = []):
-  for col in rows_count:
+  for col in range(rows_count):
     if len([x for [x,y]in coords if x==col or abs(x-col)==abs(y-row)])!=0:
       continue
     new_coords = [[col,row]] + coords
