@@ -21,10 +21,8 @@ def infix_to_postfix(infix):
           stack.append(item)
           break
         postfix += stack.pop()
-
   for _ in range(len(stack)):
     postfix += stack.pop()
-
   return postfix
 def postfix_to_infix(postfix):
   stack = []
@@ -35,7 +33,6 @@ def postfix_to_infix(postfix):
       l = stack.pop()
       ll = stack.pop()
       stack.append(f"({ll}{item}{l})")
-
   return stack[0]
 
 def infix_to_prefix(infix):
@@ -58,11 +55,10 @@ def infix_to_prefix(infix):
           stack.append(item)
           break
         prefix = stack.pop() + prefix
-
   for _ in range(len(stack)):
     prefix = stack.pop() + prefix
-
   return prefix
+
 def prefix_to_infix(prefix):
   stack = []
   for item in prefix[::-1]:
@@ -72,7 +68,6 @@ def prefix_to_infix(prefix):
       l = stack.pop()
       ll = stack.pop()
       stack.append(f"({l}{item}{ll})")
-
   return stack[0]
 
 def postfix_to_prefix(postfix):
