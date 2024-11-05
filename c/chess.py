@@ -6,20 +6,19 @@
 # If it reaches to the last row, the first compatible square will be selected
 # Then it will go to the top row again and tries all this with the next square in top row
 
-rows = int(input("How many rows? "))
+rows_count = int(input("How many rows? "))
 all_possible_solutions = []
 
 def tree(row , coords = []):
-  used_columns = [x for [x,y] in coords]
-  for col in [x for x in range(rows) if used_columns.count(x)==0]:
-    if len([x for [x,y]in coords if abs(x-col)==abs(y-row)])!=0:
+  for col in rows_count:
+    if len([x for [x,y]in coords if x==col or abs(x-col)==abs(y-row)])!=0:
       continue
     new_coords = [[col,row]] + coords
     if row == 0:
       all_possible_solutions.append(new_coords)
       return
     tree(row - 1 , coords=new_coords)
-tree(rows - 1)
+tree(rows_count - 1)
 
 
 
@@ -30,12 +29,12 @@ colors = ['#F0D9B5', '#B58863']
 
 w = Tk()
 w.title("N-Queen")
-canvas = Canvas(w, width=square_size * rows, height=square_size * rows, bg="white")
+canvas = Canvas(w, width=square_size * rows_count, height=square_size * rows_count, bg="white")
 canvas.pack()
 original_image = Image.open("queen.png").convert("RGBA").resize((int(square_size*0.8), int(square_size*0.8)), 1)
 tk_image = ImageTk.PhotoImage(original_image)
-for row in range(rows):
-  for col in range(rows):
+for row in range(rows_count):
+  for col in range(rows_count):
     x1,y1 = col * square_size, row * square_size
     x2,y2 = x1 + square_size, y1 + square_size
     color = colors[(row + col) % 2]
