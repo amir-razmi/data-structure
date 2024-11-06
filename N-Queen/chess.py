@@ -30,7 +30,7 @@ tree(rows_count - 1)
 
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk
-square_size = 80
+square_size = 100 - rows_count * 3
 colors = ['#F0D9B5', '#B58863']
 
 w = Tk()
@@ -51,7 +51,7 @@ def generate_queens(coords, page):
   for [x,y] in coords:
     id = canvas.create_image(square_size * x, square_size * y, anchor='nw', image=tk_image)
     ids.append(id)
-  text = canvas.create_text(20,20, font=50, text=f"{page}",)
+  text = canvas.create_text(30,30, font=50, text=f"{page}",)
   ids.append(text)
   return ids
 
