@@ -9,38 +9,44 @@
 # tree function is actually a  n**n  function wich has the max complexity
 # but becouse of  this  3  sectoins , it's  3045  times faster than  n**n  in 8x8 board
 
-rows_count = int(input("How many rows? "))
+N = int(input("How many rows? "))
 all_possible_solutions = []
 
-def tree(row , queens = [], t_awail_cols=range(rows_count), avail_cols=range(rows_count)):
+def tree(row=N-1,queens=[],t_awail_cols=range(N),avail_cols=range(N)):
   for col in avail_cols:
     new_queens = [[col,row]] + queens
     if row == 0:
       all_possible_solutions.append(new_queens)
       return
-
     next_row = row - 1
     new_t_avail_cols = [x for x in t_awail_cols if x != col]
     next_row_avail_cols = new_t_avail_cols.copy()
     for [x,y] in new_queens:
-      next_row_avail_cols = [c for c in next_row_avail_cols if abs(x-c)!=abs(y-next_row)]
-
-    tree(next_row , queens=new_queens, t_awail_cols=new_t_avail_cols, avail_cols=next_row_avail_cols)
-tree(rows_count - 1)
+      next_row_avail_cols = [
+        c for c in next_row_avail_cols if 
+        abs(x-c)!=abs(y-next_row)
+      ]
+    tree(
+      row = next_row, 
+      queens = new_queens, 
+      t_awail_cols = new_t_avail_cols, 
+      avail_cols = next_row_avail_cols
+    )
+tree()
 
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk
-square_size = 100 - rows_count * 3
+square_size = 100 - N * 3
 colors = ['#F0D9B5', '#B58863']
 
 w = Tk()
 w.title("N-Queen")
-canvas = Canvas(w, width=square_size * rows_count, height=square_size * rows_count, bg="white")
+canvas = Canvas(w, width=square_size * N, height=square_size * N, bg="white")
 canvas.pack()
 original_image = Image.open("queen.png").convert("RGBA").resize((int(square_size*0.8), int(square_size*0.8)), 1)
 tk_image = ImageTk.PhotoImage(original_image)
-for row in range(rows_count):
-  for col in range(rows_count):
+for row in range(N):
+  for col in range(N):
     x1,y1 = col * square_size, row * square_size
     x2,y2 = x1 + square_size, y1 + square_size
     color = colors[(row + col) % 2]
