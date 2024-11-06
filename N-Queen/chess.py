@@ -9,23 +9,26 @@
 # tree function is actually a  n**n  function wich has the max complexity
 # but becouse of  this  3  sectoins , it's  3045  times faster than  n**n  in 8x8 board
 
-# 70% faster than the algorithms in internet
-
 rows_count = int(input("How many rows? "))
 all_possible_solutions = []
 
-def tree(row , coords = [], col_range=range(rows_count)):
-  for col in col_range:
-    if len([x for [x,y]in coords if abs(x-col)==abs(y-row)])!=0:
-      continue
-    new_coords = [[col,row]] + coords
+def tree(row , queens = [], t_awail_cols=range(rows_count), avail_cols=range(rows_count)):
+  for col in avail_cols:
+    new_queens = [[col,row]] + queens
     if row == 0:
-      all_possible_solutions.append(new_coords)
+      all_possible_solutions.append(new_queens)
       return
-    tree(row - 1 , coords=new_coords, col_range=[x for x in col_range if x != col])
+
+    next_row = row-1
+    new_t_avail_cols = [x for x in t_awail_cols if x != col]
+    next_row_avail_cols = new_t_avail_cols.copy()
+    for [x,y] in new_queens:
+      next_row_avail_cols = [c for c in next_row_avail_cols if abs(x-c)!=abs(y-next_row)]
+
+    tree(next_row , queens=new_queens, t_awail_cols=new_t_avail_cols, avail_cols=next_row_avail_cols)
 tree(rows_count - 1)
 
-
+print(len(all_possible_solutions))
 
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk
