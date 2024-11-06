@@ -1,7 +1,20 @@
 operator_priority = {"-": 1 , "+": 1, "*" : 2, "/": 2, "^": 3 , "(": 4}
 operators = ["-","+","*","/","^","(",")"]
 
+def is_infix(value):
+  if operators.count(value[0]) != 0 or operators.count(value[-1]) != 0:
+    raise ValueError("Value is not infix")
+def is_postfix(value):
+  if operators.count(value[0]) != 0 or operators.count(value[-1]) == 0:
+    raise ValueError("Value is not postfix")
+def is_prefix(value):
+  if operators.count(value[0]) == 0 or operators.count(value[-1]) != 0:
+    raise ValueError("Value is not pretfix")
+
+
 def infix_to_postfix(infix):
+  is_infix(infix)
+
   postfix = ""
   stack = []
   for item in infix:
@@ -25,6 +38,8 @@ def infix_to_postfix(infix):
     postfix += stack.pop()
   return postfix
 def postfix_to_infix(postfix):
+  is_postfix(postfix)
+
   stack = []
   for item in postfix:
     if operators.count(item) == 0:
@@ -36,6 +51,8 @@ def postfix_to_infix(postfix):
   return stack[0]
 
 def infix_to_prefix(infix):
+  is_infix(infix)
+
   prefix = ""
   stack = []
   for item in infix[::-1]:
@@ -60,6 +77,8 @@ def infix_to_prefix(infix):
   return prefix
 
 def prefix_to_infix(prefix):
+  is_prefix(prefix)
+
   stack = []
   for item in prefix[::-1]:
     if operators.count(item) == 0:
