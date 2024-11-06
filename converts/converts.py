@@ -18,24 +18,24 @@ def is_infix(value):
   value = value.replace(" " , "")
   is_operation(value)
   if main_operators.count(value[0]) != 0 or main_operators.count(value[-1]) != 0:
-    show_error("Value is not infix")
-    raise ValueError("Value is not infix")
+    show_error("Operation is not infix")
+    raise ValueError("Operation is not infix")
   hide_error()
 
 def is_postfix(value):
   value = value.replace(" " , "")
   is_operation(value)
   if main_operators.count(value[0]) != 0 or main_operators.count(value[-1]) == 0:
-    show_error("Value is not postfix")
-    raise ValueError("Value is not postfix")
+    show_error("Operation is not postfix")
+    raise ValueError("Operation is not postfix")
   hide_error()
 
 def is_prefix(value):
   value = value.replace(" " , "")
   is_operation(value)
   if main_operators.count(value[0]) == 0 or main_operators.count(value[-1]) != 0:
-    show_error("Value is not pretfix")
-    raise ValueError("Value is not pretfix")
+    show_error("Operation is not pretfix")
+    raise ValueError("Operation is not pretfix")
   hide_error()
 
 
