@@ -5,10 +5,10 @@ main_operators = ["-","+","*","/","^"]
 def is_operation(value):
   operator_count = 0
   variable_count = 0
-  for c in value:
-    if main_operators.__contains__(c):
+  for char in value:
+    if char in main_operators:
       operator_count += 1
-    elif not operators.__contains__(c):
+    elif char not in operators:
       variable_count += 1
   if operator_count + 1 != variable_count:
     show_error("Not an operation")
@@ -17,7 +17,7 @@ def is_operation(value):
 def is_infix(value):
   value = value.replace(" " , "")
   is_operation(value)
-  if main_operators.__contains__(value[0]) or main_operators.__contains__(value[-1]):
+  if value[0] in main_operators or value[-1] in main_operators:
     show_error("Operation is not infix")
     raise ValueError("Operation is not infix")
   hide_error()
@@ -25,7 +25,7 @@ def is_infix(value):
 def is_postfix(value):
   value = value.replace(" " , "")
   is_operation(value)
-  if main_operators.__contains__(value[0]) or not main_operators.__contains__(value[-1]):
+  if value[0] in main_operators or value[-1] not in main_operators:
     show_error("Operation is not postfix")
     raise ValueError("Operation is not postfix")
   hide_error()
@@ -33,7 +33,7 @@ def is_postfix(value):
 def is_prefix(value):
   value = value.replace(" " , "")
   is_operation(value)
-  if not main_operators.__contains__(value[0]) or main_operators.__contains__(value[-1]):
+  if value[0] not in main_operators or value[-1] in main_operators:
     show_error("Operation is not pretfix")
     raise ValueError("Operation is not pretfix")
   hide_error()
@@ -45,7 +45,7 @@ def infix_to_postfix(infix):
   postfix = ""
   stack = []
   for char in infix:
-    if not operators.__contains__(char):
+    if char not in operators:
       postfix += char
     elif char == ")":
       while True:
@@ -70,7 +70,7 @@ def postfix_to_infix(postfix, return_value = False):
 
   stack = []
   for char in postfix:
-    if not operators.__contains__(char):
+    if char not in operators:
       stack.append(char)
     else:
       l = stack.pop()
@@ -88,7 +88,7 @@ def infix_to_prefix(infix):
   prefix = ""
   stack = []
   for char in infix[::-1]:
-    if not operators.__contains__(char):
+    if char not in operators:
       prefix = char + prefix
     elif char == "(":
       while True:
@@ -113,7 +113,7 @@ def prefix_to_infix(prefix, return_value=False):
 
   stack = []
   for char in prefix[::-1]:
-    if not operators.__contains__(char):
+    if char not in operators:
       stack.append(char)
     else:
       l = stack.pop()
