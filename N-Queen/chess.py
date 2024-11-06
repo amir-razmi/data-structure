@@ -1,3 +1,4 @@
+import time
 # Starts from top row to bottom
 # On each row, loops on all columns(squares)
 # It checks if this square is compatible with previously selected squares
@@ -32,7 +33,12 @@ def tree(row=N-1,queens=[],t_awail_cols=range(N),avail_cols=range(N)):
       t_awail_cols = new_t_avail_cols, 
       avail_cols = next_row_avail_cols
     )
+
+s = time.time()
 tree()
+e = time.time()
+
+print("Time(s): ", e-s)
 
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk
