@@ -48,9 +48,7 @@ def infix_to_postfix(infix):
     if char not in operators:
       postfix += char
     elif char == ")":
-      while True:
-        if len(stack) == 0:
-          break
+      while len(stack) > 0:
         last_stack = stack.pop()
         if last_stack == "(":
           break
@@ -91,9 +89,7 @@ def infix_to_prefix(infix):
     if char not in operators:
       prefix = char + prefix
     elif char == "(":
-      while True:
-        if len(stack) == 0:
-          break
+      while len(stack) > 0:
         last_stack = stack.pop()
         if last_stack == ")":
           break
