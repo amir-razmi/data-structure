@@ -19,7 +19,7 @@ def tree(row , queens = [], t_awail_cols=range(rows_count), avail_cols=range(row
       all_possible_solutions.append(new_queens)
       return
 
-    next_row = row-1
+    next_row = row - 1
     new_t_avail_cols = [x for x in t_awail_cols if x != col]
     next_row_avail_cols = new_t_avail_cols.copy()
     for [x,y] in new_queens:
@@ -27,8 +27,6 @@ def tree(row , queens = [], t_awail_cols=range(rows_count), avail_cols=range(row
 
     tree(next_row , queens=new_queens, t_awail_cols=new_t_avail_cols, avail_cols=next_row_avail_cols)
 tree(rows_count - 1)
-
-print(len(all_possible_solutions))
 
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk
