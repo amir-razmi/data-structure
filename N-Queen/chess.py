@@ -21,12 +21,11 @@ def tree(row=N-1,queens=[],t_awail_cols=range(N),avail_cols=range(N)):
       return
     next_row = row - 1
     new_t_avail_cols = [x for x in t_awail_cols if x != col]
-    next_row_avail_cols = new_t_avail_cols.copy()
+    next_row_avail_cols = set(new_t_avail_cols)
     for [x,y] in new_queens:
-      next_row_avail_cols = [
-        c for c in next_row_avail_cols if 
-        abs(x-c)!=abs(y-next_row)
-      ]
+      row_distance = abs(y - next_row)
+      next_row_avail_cols.discard(x - row_distance)
+      next_row_avail_cols.discard(x + row_distance)
     tree(
       row = next_row, 
       queens = new_queens, 
