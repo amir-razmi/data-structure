@@ -1,36 +1,31 @@
 import time
-# Starts from top row to bottom
-# On each row, loops on all columns(squares)
-# It checks if this square is compatible with previously selected squares
-# If it does not, then it will continue to next column
-# And if it was ok, then it will go to next row
-# If it reaches to the last row, the first compatible square will be selected
-# Then it will go to the top row again and tries all this with the next square in top row
-
-# tree function is actually a  n**n  function wich has the max complexity
-# but becouse of  this  3  sectoins , it's  3045  times faster than  n**n  in 8x8 board
 
 N = int(input("How many rows? "))
 all_possible_solutions = []
 
-def tree(row=N-1,queens=[],t_awail_cols=range(N),avail_cols=range(N)):
-  for col in avail_cols:
-    new_queens = [[col,row]] + queens
+def tree(
+    row=N-1,
+    queens=[],
+    t_awail_cols=range(N),
+    avail_squares=range(N)
+  ):
+  for x in avail_squares:
+    new_queens = [[x,row]] + queens
     if row == 0:
       all_possible_solutions.append(new_queens)
       return
     next_row = row - 1
-    new_t_avail_cols = [x for x in t_awail_cols if x != col]
-    next_row_avail_cols = set(new_t_avail_cols)
-    for [x,y] in new_queens:
-      row_distance = abs(y - next_row)
-      next_row_avail_cols.discard(x - row_distance)
-      next_row_avail_cols.discard(x + row_distance)
+    new_t_avail_cols = [col for col in t_awail_cols if col != x]
+    next_row_avail_squares = set(new_t_avail_cols)
+    for [_x,_y] in new_queens:
+      row_distance = abs(_y - next_row)
+      next_row_avail_squares.discard(_x - row_distance)
+      next_row_avail_squares.discard(_x + row_distance)
     tree(
       row = next_row, 
       queens = new_queens, 
       t_awail_cols = new_t_avail_cols, 
-      avail_cols = next_row_avail_cols
+      avail_squares = next_row_avail_squares
     )
 
 s = time.time()
