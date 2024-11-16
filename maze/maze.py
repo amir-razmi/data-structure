@@ -1,8 +1,8 @@
 import pygame
 import random
 
-width, height = 1200,900
-tile = 30
+width, height = 1200,750
+tile = 50
 cols,rows = width // tile, height // tile 
 wall_color = pygame.Color('darkorange')
 screen_color = pygame.Color('darkslategray')
@@ -63,6 +63,7 @@ class Maze:
     self.cells = [Cell(col , row) for col in range(cols) for row in range(rows)]
     self.stacks = [[self.cells[0]]]
     self.doubled_rows = []
+    self.doubled_cols = []
 
   def select_next_cell(self, cur_cell):
     all_neighbors = cur_cell.get_all_neighbor_cells()
@@ -101,11 +102,17 @@ class Maze:
       if next_cell:
         stack.append(cur_cell)
         stack.append(next_cell)
-      if self.hard_mode and cur_cell.row % 2 == 0 and cur_cell.row not in self.doubled_rows:
-        another_cell = self.select_next_cell(cur_cell)
-        if another_cell:
-          self.doubled_rows.append(cur_cell.row)
-          self.stacks.append([another_cell])
+      if self.hard_mode:
+        if cur_cell.row % 4 == 0 and cur_cell.row not in self.doubled_rows:
+          another_cell = self.select_next_cell(cur_cell)
+          if another_cell:
+            self.doubled_rows.append(cur_cell.row)
+            self.stacks.append([another_cell])
+        elif cur_cell.col % 3 == 0 and cur_cell.col not in self.doubled_cols:
+          another_cell = self.select_next_cell(cur_cell)
+          if another_cell:
+            self.doubled_cols.append(cur_cell.col)
+            self.stacks.append([another_cell])
 
   def is_maze_created(self):
     empty_stacks = [s for s in self.stacks if len(s) <= 0]
@@ -171,7 +178,7 @@ class MazeSolver:
 
 
 
-maze = Maze(hard_mode=True)
+maze = Maze(hard_mode=False)
 maze_solver = MazeSolver()
 
 generating_maze = True
