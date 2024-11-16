@@ -41,7 +41,7 @@ class Cell:
     x,y = self.col * tile, self.row * tile
     if self.solver_visited:
       pygame.draw.rect(screen, pygame.Color("black"), (x, y, tile, tile))
-      pygame.draw.rect(screen, pygame.Color("saddlebrown"), pygame.Rect(x + tile /4, y + tile /4 , tile / 2 , tile /2 ))
+      pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect(x + tile /4, y + tile /4 , tile / 2 , tile /2 ))
     elif self.visited:
       pygame.draw.rect(screen, pygame.Color("black"), (x, y, tile, tile))
 
@@ -66,14 +66,14 @@ class Cell:
 
   def select_next_cell(self):
     all_neibors = self.get_all_neibor_cells()
-    not_visited_neibors = [neibor for neibor in all_neibors.values() if neibor and not neibor.visited]
-    
+    not_visited_neibors = [n for n in all_neibors.values() if n and not n.visited]
+
     if len(not_visited_neibors) > 0:
       next_cell = random.choice(not_visited_neibors)
       self.remove_walls(next_cell)
       next_cell.visited = True
       return next_cell
-    
+
   def solving_select_next_cell(self):
       neibor_cells = self.get_all_neibor_cells()
       possible_neibors = []
@@ -114,6 +114,7 @@ cells = [Cell(col , row) for col in range(cols) for row in range(rows)]
 
 stacks = [[cells[0]]]
 cells[0].visited = True
+doubled_rows = []
 
 while running:
   screen.fill(screen_color)
@@ -135,6 +136,11 @@ while running:
     if next_cell:
       stack.append(current_cell)
       stack.append(next_cell)
+    elif current_cell.row % 2 == 0 and current_cell.row not in doubled_rows:
+      another_cell = current_cell.select_next_cell()
+      if another_cell:
+        doubled_rows.append(current_cell.row)
+        stacks.append([another_cell])
 
   clock.tick(60)
   pygame.display.flip()
@@ -174,6 +180,7 @@ while running:
     stack.append(current_cell)
     stack.append(next_cell)
   else:
+    current_cell.solver_visited = False
     current_cell.solver_walls = current_cell.generate_walls()
 
 
