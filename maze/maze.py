@@ -130,9 +130,10 @@ class MazeSolver:
     self.cells = maze.cells
     self.stack = [self.cells[0]]
     self.goal = self.cells[-1]
+    self.solved = False
 
   def move_solver(self):
-    if len(self.stack) <= 0:
+    if self.solved or len(self.stack) <= 0:
       return
 
     cur_cell = self.stack.pop()
@@ -141,6 +142,7 @@ class MazeSolver:
 
     if cur_cell == self.goal:
       self.stack.append(cur_cell)
+      self.solved = True
       return
 
     next_cell = self.select_next_cell(cur_cell)
@@ -180,6 +182,15 @@ class MazeSolver:
 
 maze = Maze(hard_mode=False)
 maze_solver = MazeSolver()
+
+# a = True
+# while a :
+#   maze.move_generators()
+#   a = not maze.is_maze_created()
+# b = True
+# while b:
+#   maze_solver.move_solver()
+#   b = not maze_solver.solved
 
 generating_maze = True
 while generating_maze:
