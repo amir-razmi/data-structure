@@ -1,9 +1,8 @@
 import pygame
 import random
-import time 
 
 width, height = 1200,900
-tile = 30
+tile = 10
 cols,rows = width // tile, height // tile 
 wall_color = pygame.Color('darkorange')
 screen_color = pygame.Color('darkslategray')
@@ -84,9 +83,16 @@ class Cell:
           self.walls[cw] = None
 
 cells = [Cell(col , row) for col in range(cols) for row in range(rows)]
-# for c in cells:
-#   print(c.col, c.row)
-stack = [cells[0]]
+
+
+stacks = [[cells[0]]]
+cells[0].visited = True
+for _ in range(int(len(cells) / 500)):
+  not_visited_cells = [cell for cell in cells if not cell.visited]
+  if len(not_visited_cells) > 0:
+    random_cell = random.choice(not_visited_cells)
+    random_cell.visited = True
+    stacks.append([random_cell])
 
 
 while running:
@@ -97,23 +103,22 @@ while running:
   for c in cells:
     c.draw()
 
-  if len(stack) == 0:
-    continue
+  for stack in stacks:
+    if len(stack) <= 0:
+      continue
 
-  current_cell = stack.pop()
-  current_cell.visited = True
-  current_cell.draw_current_cell()
+    current_cell = stack.pop()
+    current_cell.visited = True
+    current_cell.draw_current_cell()
 
-  clock.tick(30)
+    next_cell = current_cell.select_next_cell()
+    if next_cell:
+      stack.append(current_cell)
+      stack.append(next_cell)
+
+  clock.tick(60)
   pygame.display.flip()
 
-  next_cell = current_cell.select_next_cell()
-  if next_cell == None:
-    continue
-
-  stack.append(current_cell)
-  stack.append(next_cell)
 
 
-
-# pygame.quit()
+pygame.quit()
