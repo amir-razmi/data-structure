@@ -2,7 +2,7 @@ import pygame
 import random
 
 width, height = 1200,900
-tile = 100
+tile = 10
 cols,rows = width // tile, height // tile 
 wall_color = pygame.Color('darkorange')
 screen_color = pygame.Color('darkslategray')
@@ -39,7 +39,10 @@ class Cell:
 
   def draw(self):
     x,y = self.col * tile, self.row * tile
-    if self.visited:
+    if self.solver_visited:
+      pygame.draw.rect(screen, pygame.Color("black"), (x, y, tile, tile))
+      pygame.draw.rect(screen, pygame.Color("saddlebrown"), pygame.Rect(x + tile /4, y + tile /4 , tile / 2 , tile /2 ))
+    elif self.visited:
       pygame.draw.rect(screen, pygame.Color("black"), (x, y, tile, tile))
 
     for wall in self.walls.values():
@@ -70,7 +73,31 @@ class Cell:
       self.remove_walls(next_cell)
       next_cell.visited = True
       return next_cell
+    
+  def solving_select_next_cell(self):
+      neibor_cells = self.get_all_neibor_cells()
+      possible_neibors = []
+      if neibor_cells["top"] and self.solver_walls["top"] == None and neibor_cells["top"].solver_walls["bottom"] == None:
+        possible_neibors.append(neibor_cells["top"])
+      if neibor_cells["right"] and self.solver_walls["right"] == None and neibor_cells["right"].solver_walls["left"] == None:
+        possible_neibors.append(neibor_cells["right"])
+      if neibor_cells["bottom"] and self.solver_walls["bottom"] == None and neibor_cells["bottom"].solver_walls["top"] == None:
+        possible_neibors.append(neibor_cells["bottom"])
+      if neibor_cells["left"] and self.solver_walls["left"] == None and neibor_cells["left"].solver_walls["right"] == None:
+        possible_neibors.append(neibor_cells["left"])
 
+      x = [n for n in possible_neibors if not n.solver_visited]
+      closest_cell_to_goal = None
+      if len(x) > 0:
+        for cell in x:
+          if closest_cell_to_goal == None:
+            closest_cell_to_goal = cell
+          elif (
+            abs(cell.col - final_cell.col) <= abs(closest_cell_to_goal.col - final_cell.col) and 
+            abs(cell.row - final_cell.row) <= abs(closest_cell_to_goal.row - final_cell.row)
+          ):
+            closest_cell_to_goal = cell
+      return closest_cell_to_goal
 
   def remove_walls(self, next_cell):
     for nw in next_cell.walls:
@@ -87,14 +114,6 @@ cells = [Cell(col , row) for col in range(cols) for row in range(rows)]
 
 stacks = [[cells[0]]]
 cells[0].visited = True
-# for _ in range(int(len(cells) / 500)):
-# for _ in range(1):
-#   not_visited_cells = [cell for cell in cells if not cell.visited]
-#   if len(not_visited_cells) > 0:
-#     random_cell = random.choice(not_visited_cells)
-#     random_cell.visited = True
-#     stacks.append([random_cell])
-
 
 while running:
   screen.fill(screen_color)
@@ -143,32 +162,15 @@ while running:
   current_cell.solver_visited = True
   current_cell.draw_current_cell()
 
-  clock.tick(3)
+  clock.tick(30)
   pygame.display.flip()
 
   if current_cell == final_cell:
     stack.append(current_cell)
     continue
 
-
-  neibor_cells = current_cell.get_all_neibor_cells()
-
-  possible_neibors = []
-  if neibor_cells["top"] and current_cell.solver_walls["top"] == None and neibor_cells["top"].solver_walls["bottom"] == None:
-    possible_neibors.append(neibor_cells["top"])
-  if neibor_cells["right"] and current_cell.solver_walls["right"] == None and neibor_cells["right"].solver_walls["left"] == None:
-    possible_neibors.append(neibor_cells["right"])
-  if neibor_cells["bottom"] and current_cell.solver_walls["bottom"] == None and neibor_cells["bottom"].solver_walls["top"] == None:
-    possible_neibors.append(neibor_cells["bottom"])
-  if neibor_cells["left"] and current_cell.solver_walls["left"] == None and neibor_cells["left"].solver_walls["right"] == None:
-    possible_neibors.append(neibor_cells["left"])
-
-
-  x = [n for n in possible_neibors if not n.solver_visited]
-  for i in possible_neibors:
-    print("Currnet Cell : " , (current_cell.col, current_cell.row) , " ==> " , (i.col,i.row))
-  if len(x) > 0:
-    next_cell = random.choice(x)
+  next_cell = current_cell.solving_select_next_cell()
+  if next_cell:
     stack.append(current_cell)
     stack.append(next_cell)
   else:
