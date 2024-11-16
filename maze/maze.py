@@ -8,12 +8,8 @@ wall_color = pygame.Color('darkorange')
 screen_color = pygame.Color('darkslategray')
 
 pygame.init()
-
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
-
-running = True
-
 
 class Cell:
   def __init__(self, x , y):
@@ -59,7 +55,8 @@ class Cell:
 
 
 class Maze:
-  def __init__(self):
+  def __init__(self, hard_mode = False):
+    self.hard_mode = hard_mode
     self.cells = [Cell(col , row) for col in range(cols) for row in range(rows)]
     self.stacks = [[self.cells[0]]]
     self.doubled_rows = []
@@ -101,11 +98,11 @@ class Maze:
       if next_cell:
         stack.append(current_cell)
         stack.append(next_cell)
-      # if current_cell.row % 2 == 0 and current_cell.row not in self.doubled_rows:
-      #   another_cell = self.select_next_cell(current_cell)
-      #   if another_cell:
-      #     self.doubled_rows.append(current_cell.row)
-      #     self.stacks.append([another_cell])
+      if self.hard_mode and current_cell.row % 2 == 0 and current_cell.row not in self.doubled_rows:
+        another_cell = self.select_next_cell(current_cell)
+        if another_cell:
+          self.doubled_rows.append(current_cell.row)
+          self.stacks.append([another_cell])
 
   def is_maze_complete(self):
     empty_stacks = [s for s in self.stacks if len(s) <= 0]
@@ -119,27 +116,11 @@ class Maze:
       cell = self.cells[x * rows + y]
       return cell
 
-maze = Maze()
-
-while running:
-  screen.fill(screen_color)
-  for event in pygame.event.get():
-    running = event.type != pygame.QUIT
-
-  maze.draw_cells()
-  maze.move()
-
-  clock.tick(60)
-  pygame.display.flip()
-
-  if maze.is_maze_complete():
-    break
-
 class MazeSolver:
   def __init__(self):
     self.cells = maze.cells
     self.stack = [self.cells[0]]
-    self.final_cell = self.cells[-1]
+    self.goal = self.cells[-1]
 
   def move(self):
     if len(self.stack) <= 0:
@@ -149,8 +130,7 @@ class MazeSolver:
     current_cell.solver_visited = True
     current_cell.draw_as_current_cell()
 
-
-    if current_cell == self.final_cell:
+    if current_cell == self.goal:
       self.stack.append(current_cell)
       return
 
@@ -174,30 +154,48 @@ class MazeSolver:
     if neibor_cells["left"] and cur_cell.solver_walls["left"] == None and neibor_cells["left"].solver_walls["right"] == None:
       possible_neibors.append(neibor_cells["left"])
 
-    x = [n for n in possible_neibors if not n.solver_visited]
+    unvisited_neibors = [n for n in possible_neibors if not n.solver_visited]
     closest_cell_to_goal = None
-    if len(x) > 0:
-      for cell in x:
+    if len(unvisited_neibors) > 0:
+      for cell in unvisited_neibors:
         if closest_cell_to_goal == None:
           closest_cell_to_goal = cell
         elif (
-          abs(cell.col - self.final_cell.col) <= abs(closest_cell_to_goal.col - self.final_cell.col) and 
-          abs(cell.row - self.final_cell.row) <= abs(closest_cell_to_goal.row - self.final_cell.row)
+          abs(cell.col - self.goal.col) <= abs(closest_cell_to_goal.col - self.goal.col) and 
+          abs(cell.row - self.goal.row) <= abs(closest_cell_to_goal.row - self.goal.row)
         ):
           closest_cell_to_goal = cell
     return closest_cell_to_goal
 
+
+
+maze = Maze(hard_mode=True)
 maze_solver = MazeSolver()
 
-while running:
+generating_maze = True
+while generating_maze:
   screen.fill(screen_color)
   for event in pygame.event.get():
-    running = event.type != pygame.QUIT
+    generating_maze = event.type != pygame.QUIT
+
+  maze.draw_cells()
+  maze.move()
+
+  clock.tick(60)
+  pygame.display.flip()
+
+  generating_maze = not maze.is_maze_complete()
+
+solving_maze = True
+while solving_maze:
+  screen.fill(screen_color)
+  for event in pygame.event.get():
+    solving_maze = event.type != pygame.QUIT
 
   maze.draw_cells()
   maze_solver.move()
 
-  clock.tick(30)
+  clock.tick(60)
   pygame.display.flip()
 
 
