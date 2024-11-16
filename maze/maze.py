@@ -5,11 +5,10 @@ width, height = 1200,750
 tile = 15
 cols,rows = width // tile, height // tile
 walls_width = 3 if tile > 20 else 2 if tile > 10 else 1
-print(walls_width)
 
-screen_color = pygame.Color('#1e1e1e')  # Light gray (background)
-wall_color = pygame.Color('#1e4f5b')  # Dark olive green (walls)
-current_cell_color = pygame.Color('#2F4F4F')  # Slate gray (active cells during generation)
+screen_color = pygame.Color('#1e1e1e')
+wall_color = pygame.Color('#1e4f5b')
+current_cell_color = pygame.Color('#2F4F4F')
 generator_visited_color = pygame.Color("#3eb489")
 solver_visisted_color = pygame.Color("#aaffe0")
 dead_end_color = pygame.Color("#709487")
@@ -188,44 +187,62 @@ class MazeSolver:
     return closest_cell_to_goal
 
 
+# hard_mode = True
+# maze = Maze(hard_mode)
+# maze_solver = MazeSolver()
 
-maze = Maze(hard_mode=True)
+def run_fast():
+  generating = True
+  while generating :
+    maze.move_generators()
+    generating = not maze.is_maze_created()
+
+  solving = True
+  while solving:
+    maze_solver.move_solver()
+    solving = not maze_solver.solved
+
+  running = True
+  while running:
+    screen.fill(screen_color)
+    for event in pygame.event.get():
+      running = event.type != pygame.QUIT
+    maze.draw_cells()
+    clock.tick(60)
+    pygame.display.flip()
+
+def run_slow():
+  generating_maze = True
+  while generating_maze:
+    screen.fill(screen_color)
+    for event in pygame.event.get():
+      generating_maze = event.type != pygame.QUIT
+
+    maze.draw_cells()
+    maze.move_generators()
+
+    clock.tick(60)
+    pygame.display.flip()
+
+    generating_maze = not maze.is_maze_created()
+
+  solving_maze = True
+  while solving_maze:
+    for event in pygame.event.get():
+      solving_maze = event.type != pygame.QUIT
+
+    maze.draw_cells()
+    maze_solver.move_solver()
+
+    clock.tick(60)
+    pygame.display.flip()
+
+
+hard_mode = True
+maze = Maze(hard_mode)
 maze_solver = MazeSolver()
 
-# a = True
-# while a :
-#   maze.move_generators()
-#   a = not maze.is_maze_created()
-# b = True
-# while b:
-#   maze_solver.move_solver()
-#   b = not maze_solver.solved
-
-generating_maze = True
-while generating_maze:
-  screen.fill(screen_color)
-  for event in pygame.event.get():
-    generating_maze = event.type != pygame.QUIT
-
-  maze.draw_cells()
-  maze.move_generators()
-
-  clock.tick(60)
-  pygame.display.flip()
-
-  generating_maze = not maze.is_maze_created()
-
-solving_maze = True
-while solving_maze:
-  screen.fill(screen_color)
-  for event in pygame.event.get():
-    solving_maze = event.type != pygame.QUIT
-
-  maze.draw_cells()
-  maze_solver.move_solver()
-
-  clock.tick(60)
-  pygame.display.flip()
-
+# generate_fast()
+run_slow()
 
 pygame.quit()
