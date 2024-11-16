@@ -1,59 +1,56 @@
 import pygame
 import random
 
-width, height = 1200,750
-tile = 15
-cols,rows = width // tile, height // tile
-walls_width = 3 if tile > 20 else 2 if tile > 10 else 1
-
-screen_color = pygame.Color('#1e1e1e')
-wall_color = pygame.Color('#1e4f5b')
-current_cell_color = pygame.Color('#2F4F4F')
-generator_visited_color = pygame.Color("#3eb489")
-solver_visisted_color = pygame.Color("#aaffe0")
-dead_end_color = pygame.Color("#709487")
-
+width, height = 1200, 750
 pygame.init()
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 
+screen_color = pygame.Color("#1e1e1e")
+wall_color = pygame.Color("#1e4f5b")
+current_cell_color = pygame.Color("#2F4F4F")
+generator_visited_color = pygame.Color("#3eb489")
+solver_visisted_color = pygame.Color("#aaffe0")
+dead_end_color = pygame.Color("#709487")
+
+
 class Cell:
-  def __init__(self, x , y):
-    self.col = x
-    self.row = y
-    self.generator_visited = 0
-    self.walls = self.generate_walls()
+  def __init__(self, x , y , size):
+    self.size = size
+    self.walls_width = 3 if self.size > 20 else 2 if self.size > 10 else 1
+    self.col, self.row = x, y
+    self.walls, self.solver_walls = self.generate_walls(), self.generate_walls()
     self.solver_visited = False
-    self.solver_walls = self.generate_walls()
+    self.generator_visited = 0
     self.dead_end = False
 
   def generate_walls(self):
-    x,y = self.col * tile, self.row * tile
+    x,y = self.col * self.size, self.row * self.size
     return {
-      "top": {"s": (x, y), "e": (x + tile , y )},
-      "right": {"s": (x + tile, y), "e": (x + tile, y + tile)},
-      "bottom": {"s": (x, y + tile), "e": (x + tile, y + tile)},
-      "left": {"s": (x, y), "e": (x, y + tile)}
+      "top": {"s": (x, y), "e": (x + self.size , y )},
+      "right": {"s": (x + self.size, y), "e": (x + self.size, y + self.size)},
+      "bottom": {"s": (x, y + self.size), "e": (x + self.size, y + self.size)},
+      "left": {"s": (x, y), "e": (x, y + self.size)}
     }
 
   def draw_as_current_cell(self):
-    x,y = self.col * tile, self.row * tile
-    pygame.draw.rect(screen, current_cell_color, (x + 2, y + 2 , tile - 2, tile - 2))
+    x,y = self.col * self.size, self.row * self.size
+    pygame.draw.rect(screen, current_cell_color, (x + 2, y + 2 , self.size - 2, self.size - 2))
 
   def draw(self):
-    x,y = self.col * tile, self.row * tile
+    x,y = self.col * self.size, self.row * self.size
     if self.dead_end:
-      pygame.draw.rect(screen, dead_end_color, (x, y, tile, tile))
+      pygame.draw.rect(screen, dead_end_color, (x, y, self.size, self.size))
     elif self.solver_visited:
-      pygame.draw.rect(screen, solver_visisted_color, (x, y, tile, tile))
+      pygame.draw.rect(screen, solver_visisted_color, (x, y, self.size, self.size))
     elif self.generator_visited == 1:
-      pygame.draw.rect(screen, screen_color, (x, y, tile, tile))
+      pygame.draw.rect(screen, screen_color, (x, y, self.size, self.size))
     elif self.generator_visited > 1:
-      pygame.draw.rect(screen, generator_visited_color, (x, y, tile, tile))
+      pygame.draw.rect(screen, generator_visited_color, (x, y, self.size, self.size))
     if self.generator_visited:
       for wall in self.walls.values():
         if wall != None:
-          pygame.draw.line(screen , wall_color, wall["s"], wall["e"], walls_width)
+          pygame.draw.line(screen , wall_color, wall["s"], wall["e"], self.walls_width)
 
   def get_all_neighbor_cells(self):
     return {
@@ -65,9 +62,12 @@ class Cell:
 
 
 class Maze:
-  def __init__(self, hard_mode = False):
+  def __init__(self, hard_mode = False , cell_size = 15):
+    self.cell_size = cell_size
+    self.cols = width // self.cell_size
+    self.rows = height // self.cell_size
     self.hard_mode = hard_mode
-    self.cells = [Cell(col , row) for col in range(cols) for row in range(rows)]
+    self.cells = [Cell(col , row, self.cell_size) for col in range(self.cols) for row in range(self.rows)]
     self.stacks = [[self.cells[0]]]
     self.doubled_rows = []
     self.doubled_cols = []
@@ -127,11 +127,11 @@ class Maze:
     return len(empty_stacks) == len(self.stacks)
   
   def is_cell_exists(self, x, y):
-    return y < rows and y >= 0 and x < cols and x >= 0
+    return y < self.rows and y >= 0 and x < self.cols and x >= 0
 
   def get_cell_by_coords(self, x, y):
     if self.is_cell_exists(x, y):
-      return self.cells[x * rows + y]
+      return self.cells[x * self.rows + y]
 
 class MazeSolver:
   def __init__(self):
@@ -187,10 +187,6 @@ class MazeSolver:
     return closest_cell_to_goal
 
 
-# hard_mode = True
-# maze = Maze(hard_mode)
-# maze_solver = MazeSolver()
-
 def run_fast():
   generating = True
   while generating :
@@ -210,6 +206,7 @@ def run_fast():
     maze.draw_cells()
     clock.tick(60)
     pygame.display.flip()
+  pygame.quit()
 
 def run_slow():
   generating_maze = True
@@ -236,13 +233,20 @@ def run_slow():
 
     clock.tick(60)
     pygame.display.flip()
+  pygame.quit()
 
 
-hard_mode = True
-maze = Maze(hard_mode)
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+
+
+maze = Maze(
+  cell_size = 15,
+  hard_mode = True
+)
 maze_solver = MazeSolver()
 
-# generate_fast()
+# run_fast()
 run_slow()
 
-pygame.quit()
