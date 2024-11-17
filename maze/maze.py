@@ -1,6 +1,8 @@
 import pygame
 import random
 
+number_keys = [pygame.K_0, pygame.K_1 , pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]
+
 width, height = 1200, 750
 pygame.init()
 screen = pygame.display.set_mode((width, height))
@@ -62,7 +64,7 @@ class Cell:
 
 
 class Maze:
-  def __init__(self, hard_mode = False , cell_size = 15):
+  def __init__(self, hard_mode = False , cell_size = 50):
     self.cell_size = cell_size
     self.cols = width // self.cell_size
     self.rows = height // self.cell_size
@@ -187,57 +189,58 @@ class MazeSolver:
     return closest_cell_to_goal
 
 
-def run_maze(r = False):
+
+
+def run_maze(reset = False, cell_size = 50, hard_mode = False):
   global maze, maze_solver
-  if r:
-    maze = Maze(
-      cell_size = 15,
-      hard_mode = True
-    )
+  if reset:
+    maze = Maze(cell_size = cell_size, hard_mode = hard_mode)
     maze_solver = MazeSolver()
 
-  finish_fast = False
+  generate_fast = False
   generating_maze = True
   while generating_maze:
     screen.fill(screen_color)
     for event in pygame.event.get():
       generating_maze = event.type != pygame.QUIT
-      if finish_fast == False:
-        finish_fast = event.type == pygame.KEYDOWN and event.key == pygame.K_f
-
-    if not finish_fast:
+      generate_fast = generate_fast or (event.type == pygame.KEYDOWN and event.key == pygame.K_f)
+    if not generate_fast:
       maze.draw_cells()
+    maze.move_generators()
+    if not generate_fast:
       clock.tick(60)
       pygame.display.flip()
-
-    maze.move_generators()
-
-
     generating_maze = not maze.is_maze_created()
 
+  solve_fast = False
   solving_maze = True
   while solving_maze:
     for event in pygame.event.get():
       solving_maze = event.type != pygame.QUIT
-      if finish_fast == False:
-        finish_fast = event.type == pygame.KEYDOWN and event.key == pygame.K_f
-
-
-    if not finish_fast:
+      solve_fast = solve_fast or (event.type == pygame.KEYDOWN and event.key == pygame.K_f)
+    if not solve_fast:
       maze.draw_cells()
+    maze_solver.move_solver()
+    if not solve_fast:
       clock.tick(60)
       pygame.display.flip()
-
-    maze_solver.move_solver()
     solving_maze = not maze_solver.solved
 
+  new_cell_size = ""
   running = True
   while running:
     for event in pygame.event.get():
       running = event.type != pygame.QUIT
-      if  event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-        run_maze(True)
-        running = False
+      if  event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_r:
+          run_maze(reset= True , hard_mode=hard_mode ,cell_size= int(new_cell_size) if len(new_cell_size) else cell_size)
+          running = False
+        elif event.key == pygame.K_h:
+          hard_mode = not hard_mode
+        elif event.key in number_keys:
+          new_cell_size += event.unicode
+        elif event.key == pygame.K_BACKSPACE and len(new_cell_size) > 0:
+          new_cell_size = new_cell_size[0:-1]
 
     maze.draw_cells()
 
@@ -246,15 +249,7 @@ def run_maze(r = False):
   pygame.quit()
 
 
-#######################################################################################################
-#######################################################################################################
-#######################################################################################################
 
-maze = Maze(
-  cell_size = 15,
-  hard_mode = True
-)
+maze = Maze()
 maze_solver = MazeSolver()
-
 run_maze()
-
