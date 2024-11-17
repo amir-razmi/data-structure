@@ -9,6 +9,7 @@ def tree(
     t_awail_cols=range(N),
     avail_squares=range(N)
   ):
+  if N > 13 and len(all_possible_solutions): return
   for x in avail_squares:
     new_queens = [[x,row]] + queens
     if row == 0:
@@ -85,4 +86,5 @@ def change_slide(event):
 
 w.bind("<Left>", change_slide)
 w.bind("<Right>", change_slide)
+
 w.mainloop()
