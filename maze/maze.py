@@ -99,8 +99,7 @@ class Maze:
 
   def move_generators(self):
     for stack in self.stacks:
-      if len(stack) <= 0:
-        continue
+      if len(stack) <= 0: continue
 
       cur_cell = stack.pop()
       cur_cell.generator_visited += 1
@@ -143,8 +142,7 @@ class MazeSolver:
     self.solved = False
 
   def move_solver(self):
-    if self.solved or len(self.stack) <= 0:
-      return
+    if self.solved or len(self.stack) <= 0: return
 
     cur_cell = self.stack.pop()
     cur_cell.solver_visited = True
