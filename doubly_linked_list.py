@@ -62,7 +62,7 @@ c = list.append("C")
 d = list.append("D")
 list.display()
 
-
+list.insert_before(c , 'F')
 list.insert_before(a, "$")
 list.insert_before(a, "%")
 list.display()

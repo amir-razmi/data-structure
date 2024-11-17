@@ -187,39 +187,31 @@ class MazeSolver:
     return closest_cell_to_goal
 
 
-def run_fast():
-  generating = True
-  while generating :
-    maze.move_generators()
-    generating = not maze.is_maze_created()
+def run_maze(r = False):
+  global maze, maze_solver
+  if r:
+    maze = Maze(
+      cell_size = 15,
+      hard_mode = True
+    )
+    maze_solver = MazeSolver()
 
-  solving = True
-  while solving:
-    maze_solver.move_solver()
-    solving = not maze_solver.solved
-
-  running = True
-  while running:
-    screen.fill(screen_color)
-    for event in pygame.event.get():
-      running = event.type != pygame.QUIT
-    maze.draw_cells()
-    clock.tick(60)
-    pygame.display.flip()
-  pygame.quit()
-
-def run_slow():
+  finish_fast = False
   generating_maze = True
   while generating_maze:
     screen.fill(screen_color)
     for event in pygame.event.get():
       generating_maze = event.type != pygame.QUIT
+      if finish_fast == False:
+        finish_fast = event.type == pygame.KEYDOWN and event.key == pygame.K_f
 
-    maze.draw_cells()
+    if not finish_fast:
+      maze.draw_cells()
+      clock.tick(60)
+      pygame.display.flip()
+
     maze.move_generators()
 
-    clock.tick(60)
-    pygame.display.flip()
 
     generating_maze = not maze.is_maze_created()
 
@@ -227,9 +219,27 @@ def run_slow():
   while solving_maze:
     for event in pygame.event.get():
       solving_maze = event.type != pygame.QUIT
+      if finish_fast == False:
+        finish_fast = event.type == pygame.KEYDOWN and event.key == pygame.K_f
+
+
+    if not finish_fast:
+      maze.draw_cells()
+      clock.tick(60)
+      pygame.display.flip()
+
+    maze_solver.move_solver()
+    solving_maze = not maze_solver.solved
+
+  running = True
+  while running:
+    for event in pygame.event.get():
+      running = event.type != pygame.QUIT
+      if  event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+        run_maze(True)
+        running = False
 
     maze.draw_cells()
-    maze_solver.move_solver()
 
     clock.tick(60)
     pygame.display.flip()
@@ -240,13 +250,11 @@ def run_slow():
 #######################################################################################################
 #######################################################################################################
 
-
 maze = Maze(
   cell_size = 15,
   hard_mode = True
 )
 maze_solver = MazeSolver()
 
-# run_fast()
-run_slow()
+run_maze()
 
