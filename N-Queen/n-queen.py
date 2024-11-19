@@ -23,9 +23,9 @@ def tree(
       next_row_avail_squares.discard(_x - row_distance)
       next_row_avail_squares.discard(_x + row_distance)
     tree(
-      row = next_row, 
-      queens = new_queens, 
-      t_awail_cols = new_t_avail_cols, 
+      row = next_row,
+      queens = new_queens,
+      t_awail_cols = new_t_avail_cols,
       avail_squares = next_row_avail_squares
     )
 
@@ -45,7 +45,7 @@ print("Time(s): ", e-s)
 
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk
-square_size = 100 - N * 3
+square_size = 800 // N
 colors = ['#F0D9B5', '#B58863']
 
 w = Tk()
