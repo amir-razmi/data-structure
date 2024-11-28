@@ -1,34 +1,24 @@
-import time
-
 N = int(input("How many rows? "))
 columns_set = set(range(N))
+
 all_possible_solutions = []
 
-
-def tree(row=N-1, queens=[]):
+def nqueen(row=N-1, queens=[]):
   if N > 13 and len(all_possible_solutions): return
 
+  if row == -1: return all_possible_solutions.append(queens)
+
   avail_squares = columns_set.copy()
-  for [_x,_y] in queens:
-    row_distance = abs(_y - row)
-    avail_squares.discard(_x - row_distance)
-    avail_squares.discard(_x + row_distance)
-    avail_squares.discard(_x)
+  for [x,y] in queens:
+    row_distance = abs(y - row)
+    avail_squares.discard(x - row_distance)
+    avail_squares.discard(x + row_distance)
+    avail_squares.discard(x)
 
   for x in avail_squares:
-    new_queens = [[x,row]] + queens
-    if row == 0:
-      all_possible_solutions.append(new_queens)
-      return
-    tree(row - 1, new_queens)
+    nqueen(row - 1, [[x,row]] + queens)
 
-s = time.time()
-tree()
-e = time.time()
-
-print("Time(s): ", e-s)
-
-
+nqueen()
 
 ##############################################################################
 ##############################################################################
