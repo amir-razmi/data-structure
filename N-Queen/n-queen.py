@@ -1,33 +1,26 @@
 import time
 
 N = int(input("How many rows? "))
+columns_set = set(range(N))
 all_possible_solutions = []
 
-def tree(
-    row=N-1,
-    queens=[],
-    t_awail_cols=range(N),
-    avail_squares=range(N)
-  ):
+
+def tree(row=N-1, queens=[]):
   if N > 13 and len(all_possible_solutions): return
+
+  avail_squares = columns_set.copy()
+  for [_x,_y] in queens:
+    row_distance = abs(_y - row)
+    avail_squares.discard(_x - row_distance)
+    avail_squares.discard(_x + row_distance)
+    avail_squares.discard(_x)
+
   for x in avail_squares:
     new_queens = [[x,row]] + queens
     if row == 0:
       all_possible_solutions.append(new_queens)
       return
-    next_row = row - 1
-    new_t_avail_cols = [col for col in t_awail_cols if col != x]
-    next_row_avail_squares = set(new_t_avail_cols)
-    for [_x,_y] in new_queens:
-      row_distance = abs(_y - next_row)
-      next_row_avail_squares.discard(_x - row_distance)
-      next_row_avail_squares.discard(_x + row_distance)
-    tree(
-      row = next_row,
-      queens = new_queens,
-      t_awail_cols = new_t_avail_cols,
-      avail_squares = next_row_avail_squares
-    )
+    tree(row - 1, new_queens)
 
 s = time.time()
 tree()
