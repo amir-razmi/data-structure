@@ -1,12 +1,11 @@
 N = int(input("How many rows? "))
 columns_set = set(range(N))
-
-all_possible_solutions = []
+all_solutions = []
 
 def nqueen(row=N-1, queens=[]):
-  if N > 13 and len(all_possible_solutions): return
-
-  if row == -1: return all_possible_solutions.append(queens)
+  if N > 13 and len(all_solutions): return
+  if row == -1: 
+    return all_solutions.append(queens)
 
   avail_squares = columns_set.copy()
   for [x,y] in queens:
@@ -54,18 +53,18 @@ def generate_queens(coords, page):
   return ids
 
 last_generated_index = 0
-queens_id = generate_queens(all_possible_solutions[last_generated_index], 1)
+queens_id = generate_queens(all_solutions[last_generated_index], 1)
 def change_slide(event):
   global queens_id,last_generated_index
   for id in queens_id:
     canvas.delete(id)
 
   if event.keysym == 'Left':
-    last_generated_index = (last_generated_index - 1) % len(all_possible_solutions)
+    last_generated_index = (last_generated_index - 1) % len(all_solutions)
   elif event.keysym == 'Right':
-    last_generated_index = (last_generated_index + 1) % len(all_possible_solutions)
+    last_generated_index = (last_generated_index + 1) % len(all_solutions)
 
-  queens_id = generate_queens(all_possible_solutions[last_generated_index], last_generated_index + 1)
+  queens_id = generate_queens(all_solutions[last_generated_index], last_generated_index + 1)
 
 w.bind("<Left>", change_slide)
 w.bind("<Right>", change_slide)
